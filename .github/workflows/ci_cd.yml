@@ -1,0 +1,33 @@
+name: CI/CD Airflow DAGs
+
+on:
+  push:
+    branches:
+      - main  # Define que se ejecute en cada push a la rama main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo content
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_PRIVATE_KEY }}  # Define tu clave privada en GitHub Secrets
+        known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+    - name: Copy DAG files to Airflow server
+      run: |
+        scp -r ./dags/* your_user@your_airflow_server:/path/to/airflow/dags
+
+    - name: Restart Airflow
+      run: |
+        ssh your_user@your_airflow_server 'sudo systemctl restart airflow-scheduler airflow-webserver'
