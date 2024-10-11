@@ -24,4 +24,4 @@ jobs:
 
       - name: Deploy DAGs
         run: |
-          scp -r dags/* airflow@http://0.0.0.0:/home/robert/airflow/dags/
+          scp -r dags/* airflow@172.18.13.213:/home/robert/airflow/dags/
